@@ -1,0 +1,20 @@
+=== EDA SUMMARY (Salary Prediction Project) ===
+Total usable rows (salary > 0): 143082
+Silver path: D:\hoctrentruong\dll\data2\silver\stackoverflow_silver_dev_clean.parquet
+Saved: D:\hoctrentruong\dll\reports\figures\01_missing_top20.png
+Salary quantiles: q01=840.00, median=65053.00, q99=961692.00
+Saved: D:\hoctrentruong\dll\reports\figures\02_salary_hist_raw.png
+Saved: D:\hoctrentruong\dll\reports\figures\03_salary_hist_log.png
+Saved: D:\hoctrentruong\dll\reports\figures\04_top_countries_count.png
+Saved: D:\hoctrentruong\dll\reports\figures\05_median_by_RemoteWork.png
+Saved: D:\hoctrentruong\dll\reports\figures\06_median_by_EdLevel.png
+Saved: D:\hoctrentruong\dll\reports\figures\07_median_by_OrgSize.png
+Saved: D:\hoctrentruong\dll\reports\figures\08_corr_heatmap.png
+Saved: D:\hoctrentruong\dll\reports\figures\09_scatter_yearspro_salarylog.png
+Saved: D:\hoctrentruong\dll\reports\figures\10_trend_median_salary_by_year.png
+Saved: D:\hoctrentruong\dll\reports\figures\11_actual_vs_pred_log_gbt.png
+Saved: D:\hoctrentruong\dll\reports\figures\12_actual_vs_pred_real_gbt.png
+Saved: D:\hoctrentruong\dll\reports\figures\13_residual_hist_gbt.png
+Saved: D:\hoctrentruong\dll\reports\figures\11_actual_vs_pred_log_lr.png
+Saved: D:\hoctrentruong\dll\reports\figures\12_actual_vs_pred_real_lr.png
+Saved: D:\hoctrentruong\dll\reports\figures\13_residual_hist_lr.png

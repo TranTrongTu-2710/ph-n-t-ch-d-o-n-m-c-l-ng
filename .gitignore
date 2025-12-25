@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.idea/
+.vscode/
+
+# Spark & Data
+spark-warehouse/
+metastore_db/
+derby.log
+
+# Project Data (File nặng không up lên git)
+data/
+data2/
+du_lieu_zip/
+*.zip
+*.tgz
+*.rar
+
+# Models (File binary nặng)
+models/
+# Nếu bạn muốn up model nhỏ thì comment dòng trên lại, nhưng GBT model thường nặng.
+
+# Output
+output/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
