@@ -56,13 +56,13 @@ def main():
     if not os.path.exists(FEATURES_PATH):
         raise FileNotFoundError(f"Missing: {FEATURES_PATH}")
 
-    print(f"📥 Đang đọc features từ: {FEATURES_PATH}")
+    print(f"[INFO] Dang doc features tu: {FEATURES_PATH}")
     df = spark.read.parquet(FEATURES_PATH)
 
     # Lọc dữ liệu hợp lệ
     df = df.filter(F.col("ConvertedCompYearly").isNotNull() & (F.col("ConvertedCompYearly") > 0))
 
-    # ✅ Outlier filter (1% - 99%): Lọc bỏ 1% lương thấp nhất và cao nhất để mô hình ổn định hơn
+    # Outlier filter (1% - 99%): Lọc bỏ 1% lương thấp nhất và cao nhất để mô hình ổn định hơn
     q1, q99 = df.approxQuantile("ConvertedCompYearly", [0.01, 0.99], 0.01)
     df = df.filter((F.col("ConvertedCompYearly") >= F.lit(q1)) & (F.col("ConvertedCompYearly") <= F.lit(q99)))
 
@@ -89,7 +89,7 @@ def main():
     # =========================
     # MODEL 1: Linear Regression
     # =========================
-    print("\n🚀 Training LinearRegression...")
+    print("\n[INFO] Training LinearRegression...")
     # ElasticNet: Kết hợp L1 (Lasso) và L2 (Ridge) regularization để tránh overfitting
     lr = LinearRegression(featuresCol="features", labelCol="label", maxIter=100, regParam=0.01, elasticNetParam=0.5)
     lr_model = lr.fit(train_df)
@@ -108,7 +108,7 @@ def main():
     # =========================
     # MODEL 2: GBT Regressor (Gradient Boosted Trees)
     # =========================
-    print("\n🚀 Training GBTRegressor (Tuned)...")
+    print("\n[INFO] Training GBTRegressor (Tuned)...")
     # GBT thường tốt hơn LR vì bắt được các mối quan hệ phi tuyến tính (Non-linear)
     # maxDepth=8: Cây sâu hơn để học các pattern phức tạp
     gbt = GBTRegressor(
@@ -135,7 +135,7 @@ def main():
 
     # So sánh và kết luận
     best = ("LR", rmse_lr) if rmse_lr <= rmse_gbt else ("GBT", rmse_gbt)
-    print(f"\n🏆 Best model by RMSE(log): {best[0]} (RMSE={best[1]:.4f})")
+    print(f"\n[RESULT] Best model by RMSE(log): {best[0]} (RMSE={best[1]:.4f})")
 
     spark.stop()
 

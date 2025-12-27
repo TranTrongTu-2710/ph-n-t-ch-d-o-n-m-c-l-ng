@@ -50,7 +50,7 @@ def load_one_year(spark: SparkSession, year: int, filename: str):
     Đọc 1 file CSV, xử lý sơ bộ và trả về DataFrame.
     """
     path = os.path.join(RAW_DATA_DIR, filename)
-    print(f"📥 Đang đọc file năm {year}: {path}")
+    print(f"[INFO] Dang doc file nam {year}: {path}")
 
     # Đọc CSV với các tùy chọn quan trọng
     df = (
@@ -77,17 +77,17 @@ def show_basic_stats(df, year: int):
     """
     In ra thống kê nhanh để kiểm tra dữ liệu có ổn không.
     """
-    print(f"\n===== Thống kê nhanh cho năm {year} =====")
+    print(f"\n===== Thong ke nhanh cho nam {year} =====")
     total_rows = df.count()
-    print(f"🔢 Tổng số dòng: {total_rows}")
+    print(f"Tong so dong: {total_rows}")
 
     # Kiểm tra cột lương (Target Variable)
     if "ConvertedCompYearly" in df.columns:
         salary_not_null = df.filter(F.col("ConvertedCompYearly").isNotNull())
         salary_null = total_rows - salary_not_null.count()
 
-        print(f"💰 Số dòng có lương: {salary_not_null.count()}")
-        print(f"🚫 Số dòng thiếu lương: {salary_null}")
+        print(f"So dong co luong: {salary_not_null.count()}")
+        print(f"So dong thieu luong: {salary_null}")
 
         # Tính trung bình và trung vị (median) lương
         if salary_not_null.count() > 0:
@@ -100,10 +100,10 @@ def show_basic_stats(df, year: int):
                     )
                     .collect()[0]
             )
-            print(f"📊 Lương trung bình: {agg['mean_salary']:.2f}")
-            print(f"📊 Lương median:    {agg['median_salary']:.2f}")
+            print(f"Luong trung binh: {agg['mean_salary']:.2f}")
+            print(f"Luong median:    {agg['median_salary']:.2f}")
     else:
-        print("⚠️ Không tìm thấy cột ConvertedCompYearly.")
+        print("[WARN] Khong tim thay cot ConvertedCompYearly.")
 
 
 def save_bronze(df, year: int):
@@ -112,7 +112,7 @@ def save_bronze(df, year: int):
     Parquet nén tốt hơn CSV và giữ được kiểu dữ liệu (schema).
     """
     out_path = os.path.join(BRONZE_DIR, f"stackoverflow_{year}")
-    print(f"💾 Ghi dữ liệu năm {year} vào: {out_path}")
+    print(f"[INFO] Ghi du lieu nam {year} vao: {out_path}")
 
     (
         df.write
@@ -151,7 +151,7 @@ def main():
         save_bronze(df_year, year) # Lưu ngay sau khi đọc
 
     # 2. Thử gộp lại để xem thống kê tổng quan
-    print("\n===== Thống kê tổng hợp lương theo năm (từ Bronze) =====")
+    print("\n===== Thong ke tong hop luong theo nam (tu Bronze) =====")
     df_all = union_all_years(dfs_by_year)
 
     if "ConvertedCompYearly" in df_all.columns:
@@ -169,7 +169,7 @@ def main():
         stats_by_year.show(truncate=False)
 
     spark.stop()
-    print("\n✅ Hoàn thành Bước 1 (Bronze).")
+    print("\n[DONE] Hoan thanh Buoc 1 (Bronze).")
 
 
 if __name__ == "__main__":

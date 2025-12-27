@@ -320,12 +320,12 @@ def main():
     spark = create_spark()
 
     if not os.path.exists(SILVER_PATH):
-        raise FileNotFoundError(f"❌ Không thấy SILVER dataset: {SILVER_PATH}")
+        raise FileNotFoundError(f"[ERROR] Khong thay SILVER dataset: {SILVER_PATH}")
 
     df = spark.read.parquet(SILVER_PATH)
 
     if "ConvertedCompYearly" not in df.columns:
-        raise ValueError("❌ Silver thiếu cột ConvertedCompYearly.")
+        raise ValueError("[ERROR] Silver thieu cot ConvertedCompYearly.")
 
     # Lọc salary hợp lệ
     df = df.filter(F.col("ConvertedCompYearly").isNotNull() & (F.col("ConvertedCompYearly") > 0)).cache()
@@ -374,7 +374,7 @@ def main():
 
     # 8) Model diagnostics (Dùng dữ liệu Gold)
     if os.path.exists(GOLD_PATH):
-        print(f"📥 Đang đọc dữ liệu Gold cho Model Diagnostics: {GOLD_PATH}")
+        print(f"[INFO] Dang doc du lieu Gold cho Model Diagnostics: {GOLD_PATH}")
         df_gold = spark.read.parquet(GOLD_PATH)
         
         gbt_diag = model_diagnostics(df_gold, MODEL_GBT, model_name="gbt")
@@ -387,12 +387,12 @@ def main():
             for x in lr_diag:
                 report_lines.append(f"Saved: {x}")
     else:
-        print(f"⚠️ Không tìm thấy Gold dataset ({GOLD_PATH}), bỏ qua Model Diagnostics.")
+        print(f"[WARN] Khong tim thay Gold dataset ({GOLD_PATH}), bo qua Model Diagnostics.")
 
     write_report(report_lines)
     print("\n".join(report_lines))
-    print(f"\n✅ Tất cả biểu đồ đã xuất ra: {FIG_DIR}")
-    print(f"✅ Summary: {REPORT_TXT}")
+    print(f"\n[DONE] Tat ca bieu do da xuat ra: {FIG_DIR}")
+    print(f"[DONE] Summary: {REPORT_TXT}")
 
     spark.stop()
 

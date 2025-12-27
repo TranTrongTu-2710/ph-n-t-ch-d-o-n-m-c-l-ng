@@ -49,16 +49,16 @@ def load_models(_spark):
     return pipeline_model, gbt_model
 
 # ===== GIAO DIỆN (UI) =====
-st.set_page_config(page_title="Salary Predictor", page_icon="💰")
+st.set_page_config(page_title="Salary Predictor")
 
-st.title("💰 IT Salary Prediction")
+st.title("IT Salary Prediction")
 st.markdown("Dự đoán mức lương lập trình viên dựa trên dữ liệu StackOverflow Survey.")
 
 spark = get_spark()
 pipeline_model, gbt_model = load_models(spark)
 
 if not pipeline_model or not gbt_model:
-    st.error("❌ Không tìm thấy Model! Hãy chạy step_3 và train_regression_v2 trước.")
+    st.error("[ERROR] Không tìm thấy Model! Hãy chạy step_3 và train_regression_v2 trước.")
     st.stop()
 
 # --- FORM NHẬP LIỆU ---
@@ -91,7 +91,7 @@ with st.form("predict_form"):
         databases = st.multiselect("Databases Worked With", 
             ["PostgreSQL", "MySQL", "SQLite", "MongoDB", "Redis", "Microsoft SQL Server", "MariaDB", "Elasticsearch", "Oracle"])
 
-    submitted = st.form_submit_button("🚀 Predict Salary")
+    submitted = st.form_submit_button("Predict Salary")
 
 # --- LOGIC DỰ ĐOÁN ---
 if submitted:
@@ -119,7 +119,7 @@ if submitted:
         # 4. Convert log -> real (Đổi về lương thật)
         salary_pred = np.expm1(pred_log)
         
-        st.success(f"### 💵 Predicted Annual Salary: ${salary_pred:,.2f}")
+        st.success(f"### Predicted Annual Salary: ${salary_pred:,.2f}")
         st.info(f"Log Value: {pred_log:.4f}")
         
     except Exception as e:

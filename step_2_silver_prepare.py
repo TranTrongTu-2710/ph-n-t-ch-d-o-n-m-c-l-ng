@@ -39,7 +39,7 @@ def create_spark_session() -> SparkSession:
 def load_bronze_year(spark: SparkSession, year: int) -> DataFrame:
     """Đọc dữ liệu Bronze đã lưu ở bước 1"""
     path = os.path.join(BRONZE_DIR, f"stackoverflow_{year}")
-    print(f"📥 Đang đọc bronze năm {year} từ: {path}")
+    print(f"[INFO] Dang doc bronze nam {year} tu: {path}")
     df = spark.read.parquet(path)
     # Phòng hờ nếu bước 1 quên thêm SurveyYear
     if "SurveyYear" not in df.columns:
@@ -82,7 +82,7 @@ def build_dev_population(df: DataFrame) -> DataFrame:
         cond = cond & F.col("ConvertedCompYearly").isNotNull()
 
     df_filtered = df.filter(cond)
-    print("👨‍💻 Số dòng sau khi lọc dev ngành phần mềm:", df_filtered.count())
+    print("So dong sau khi loc dev nganh phan mem:", df_filtered.count())
     return df_filtered
 
 
@@ -97,13 +97,13 @@ def clean_salary_outliers(df: DataFrame) -> DataFrame:
 
     # Tính ngưỡng 1% và 99%
     low, high = df.approxQuantile("ConvertedCompYearly", [0.01, 0.99], 0.01)
-    print(f"➡️ Giữ lại lương trong khoảng [{low:.2f}, {high:.2f}]")
+    print(f"[INFO] Giu lai luong trong khoang [{low:.2f}, {high:.2f}]")
     
     df_filtered = df.filter(
         (F.col("ConvertedCompYearly") >= F.lit(low)) &
         (F.col("ConvertedCompYearly") <= F.lit(high))
     )
-    print("💾 Số dòng sau khi loại outlier lương:", df_filtered.count())
+    print("So dong sau khi loai outlier luong:", df_filtered.count())
     return df_filtered
 
 
@@ -201,7 +201,7 @@ def impute_numeric_features(df: DataFrame) -> DataFrame:
 
     # Tạo tên cột mới có hậu tố _imp
     output_cols = [c + "_imp" for c in numeric_cols]
-    print("🛠 Đang impute median cho:", numeric_cols)
+    print("[INFO] Dang impute median cho:", numeric_cols)
     
     imputer = Imputer(inputCols=numeric_cols, outputCols=output_cols).setStrategy("median")
     model = imputer.fit(df)
@@ -219,7 +219,7 @@ def clean_text_columns(df: DataFrame) -> DataFrame:
             fill_dict[c] = "None" # Nếu null thì điền chuỗi "None"
     
     if fill_dict:
-        print(f"🧹 FillNA cho các cột text: {list(fill_dict.keys())}")
+        print(f"[INFO] FillNA cho cac cot text: {list(fill_dict.keys())}")
         df = df.fillna(fill_dict)
     
     return df
@@ -267,12 +267,12 @@ def main():
 
     # 7. Lưu kết quả ra Silver
     out_path = os.path.join(SILVER_DIR, "stackoverflow_silver_dev_clean.parquet")
-    print(f"💾 Ghi dataset Silver vào: {out_path}")
+    print(f"[INFO] Ghi dataset Silver vao: {out_path}")
     
     df_dev.write.mode("overwrite").parquet(out_path)
 
     spark.stop()
-    print("\n✅ Hoàn thành Bước 2 - Silver.")
+    print("\n[DONE] Hoan thanh Buoc 2 - Silver.")
 
 
 if __name__ == "__main__":

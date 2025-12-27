@@ -49,9 +49,9 @@ def choose_numeric_columns(df: DataFrame) -> List[str]:
     candidates = ["YearsCodeProNum_imp", "YearsCodeProNum"]
     for c in candidates:
         if c in df.columns:
-            print(f"🔢 Numeric feature được chọn: {c}")
+            print(f"[INFO] Numeric feature duoc chon: {c}")
             return [c]
-    print("⚠️ Không tìm thấy YearsCodeProNum!")
+    print("[WARN] Khong tim thay YearsCodeProNum!")
     return []
 
 
@@ -64,7 +64,7 @@ def choose_categorical_columns(df: DataFrame) -> List[str]:
         "RemoteWork",     # Làm từ xa hay tại văn phòng
     ]
     categorical_cols = [c for c in candidate_cats if c in df.columns]
-    print("🔤 Categorical features được chọn:", categorical_cols)
+    print("[INFO] Categorical features duoc chon:", categorical_cols)
     return categorical_cols
 
 
@@ -72,7 +72,7 @@ def choose_text_columns(df: DataFrame) -> List[str]:
     """Chọn cột văn bản (Text) chứa danh sách kỹ năng"""
     candidates = ["LanguageHaveWorkedWith", "DatabaseHaveWorkedWith"]
     text_cols = [c for c in candidates if c in df.columns]
-    print("📝 Text features được chọn:", text_cols)
+    print("[INFO] Text features duoc chon:", text_cols)
     return text_cols
 
 
@@ -111,7 +111,7 @@ def build_pipeline(categorical_cols: List[str], numeric_cols: List[str], text_co
     assembler_inputs.extend(numeric_cols)
 
     # 4. VectorAssembler: Gom tất cả các cột (số, one-hot, text vector) thành 1 vector duy nhất gọi là "features_raw"
-    print("🔗 Các cột đầu vào cho VectorAssembler:", assembler_inputs)
+    print("[INFO] Cac cot dau vao cho VectorAssembler:", assembler_inputs)
     stages.append(VectorAssembler(
         inputCols=assembler_inputs,
         outputCol="features_raw",
@@ -134,14 +134,14 @@ def main():
     spark = create_spark_session()
 
     if not os.path.exists(SILVER_PATH):
-        raise FileNotFoundError(f"❌ Không tìm thấy SILVER_PATH: {SILVER_PATH}")
+        raise FileNotFoundError(f"[ERROR] Khong tim thay SILVER_PATH: {SILVER_PATH}")
 
-    print(f"📥 Đang đọc dữ liệu Silver từ: {SILVER_PATH}")
+    print(f"[INFO] Dang doc du lieu Silver tu: {SILVER_PATH}")
     df = spark.read.parquet(SILVER_PATH)
 
     # Lọc bỏ dòng thiếu lương hoặc lương <= 0
     if "ConvertedCompYearly" not in df.columns:
-        raise ValueError("❌ Thiếu cột ConvertedCompYearly")
+        raise ValueError("[ERROR] Thieu cot ConvertedCompYearly")
     
     df = df.filter(F.col("ConvertedCompYearly").isNotNull() & (F.col("ConvertedCompYearly") > 0))
 
@@ -154,7 +154,7 @@ def main():
     keep_cols = ["ConvertedCompYearly"] + numeric_cols + categorical_cols + text_cols
     df = df.select(*keep_cols)
     df = df.cache() # Cache vào RAM để chạy nhanh hơn
-    print(f"📊 Số lượng mẫu training: {df.count()}")
+    print(f"[INFO] So luong mau training: {df.count()}")
 
     # Xây dựng và Huấn luyện Pipeline (Fit)
     # Lúc này Spark sẽ học từ điển (Vocabulary) và các chỉ số (String Index) từ dữ liệu
@@ -167,12 +167,12 @@ def main():
     # Ghi dữ liệu đã biến đổi ra file (để train model ở bước sau)
     os.makedirs(os.path.dirname(FEATURES_PATH), exist_ok=True)
     out.repartition(32).write.mode("overwrite").parquet(FEATURES_PATH)
-    print(f"✅ Đã ghi GOLD features ra: {FEATURES_PATH}")
+    print(f"[INFO] Da ghi GOLD features ra: {FEATURES_PATH}")
 
     # Ghi Pipeline Model ra file (để Web App dùng lại)
     os.makedirs(MODEL_DIR, exist_ok=True)
     model.write().overwrite().save(PIPELINE_MODEL_PATH)
-    print(f"✅ Đã lưu Feature Pipeline Model ra: {PIPELINE_MODEL_PATH}")
+    print(f"[INFO] Da luu Feature Pipeline Model ra: {PIPELINE_MODEL_PATH}")
 
     spark.stop()
 
